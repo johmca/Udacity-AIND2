@@ -1,0 +1,34 @@
+To run the code navigate to /AIND-Sudoku-master
+
+Type command "activate conda"  to enter the environment
+
+Run the code with command "python solution_test.py"
+
+
+#-------------------------------------------------------------------------
+    
+##def remove_from_peers(key, value, sudoku):
+##    """
+##    Remove digits of value from peers but only in the peergroups shared by the twin and partner
+##    
+##    Args:
+##        key (string): The dictionary key of the twin being processed e.g. A2
+##        value (string): The dictionary value of the twin being tested e.g. 23
+##        sudoku (dict): The current state of the sudoku in dictionary form  
+##        
+##    Returns:
+##        
+##    """
+### Search the units where the key exists for twins
+##    peer_list=peers.get(key)
+##
+###For each element of the solved values dictionary get the value (digit) and then for each 
+###element of the peers dictionary remove digit
+##    for box in solved_values:
+##        digit = values[box]
+##        for peer in peers[box]:
+##            values[peer] = values[peer].replace(digit,'')
+##
+##    return
+
+#-------------------------------------------------------------------------

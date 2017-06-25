@@ -67,17 +67,17 @@ rather than running the whole thing.
 
  
 
-i)  Navigate to your project folder.
+1.  Navigate to your project folder.
 
-ii) If not in your AIND Anaconda environment do so now
+2.  If not in your AIND Anaconda environment do so now
 
-iii) Type command   where xxxxx is project name e.g. isolation
+3.  Type command where xxxxx is project name e.g. isolation
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 udacity submit xxxxxxx
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If prompted login as john\@mcavenue.co.uk/Diesel10
+If prompted login with usual login -
 
  
 

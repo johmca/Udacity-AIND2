@@ -25,7 +25,7 @@ root                  *  C:\Users\John\Anaconda3
  
 
 We have set up the AIND environment for the course so need to move into that
-environment to do work in Python
+environment to do work in Python3
 
  
 
@@ -52,6 +52,31 @@ and we see we are now in the AIND environment
 #
 aind                  *  C:\Users\John\Anaconda3\envs\aind
 root                     C:\Users\John\Anaconda3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+I have now set up a Python2 environment called AIND2 which is accessed as
+follows
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+activate AIND2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+I set AIND2 up to work on the Pacman lab so the list of modules installed will,
+initially at any rate, be those required for this project.
+
+ 
+
+To check an environment for the version of Python used and which modules are
+installed issue the following command once you are in the environment
+
+ 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+conda list
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  

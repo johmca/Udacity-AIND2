@@ -101,8 +101,10 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
 
-  To run for the tinymaze using the DFS seacrch algorithm
+    Run as follows
   python pacman.py -l tinyMaze -p SearchAgent -a fn=dfs
+  python pacman.py -l mediumMaze -p SearchAgent -a fn=dfs
+  python pacman.py -l bigMaze -p SearchAgent -a fn=dfs -z .5
 
 
   """
@@ -187,8 +189,11 @@ def breadthFirstSearch(problem):
   To expand a node execute - problem.getSuccessors(state) - returns a list of children in form (state, action, cost)
   To check if a node contains a goal state -  problem.isGoalState(state)
 
-  To run for the tinymaze using the BFS seacrch algorithm
+  Run as follows
   python pacman.py -l tinyMaze -p SearchAgent -a fn=bfs
+  python pacman.py -l mediumMaze -p SearchAgent -a fn=bfs
+  python pacman.py -l bigMaze -p SearchAgent -a fn=bfs -z .5
+
 
   """
   "*** YOUR CODE HERE ***"
@@ -237,20 +242,226 @@ def breadthFirstSearch(problem):
   #util.raiseNotDefined()
       
 def uniformCostSearch(problem):
-  "Search the node of least total cost first. "
+  """Search the node of least total cost first.
+
+  Pseudo code  from text book fig 3:14 p84....
+
+  function UNIFORM-COST-SEARCH(problem) returns a solution or failure
+
+  set initial_node = new node with node.STATE = problem.INITIAL-STATE, node.PATH = [], node.PATH-COST=0
+  set frontier = new priority queue ordered by PATH-COST with first element = initial_node
+  set explored = empty set
+  loop do
+    if frontier is empty then return failure
+    set current_node =POP(frontier) i.e. node with lowest cost from frontier is selected
+    if problem.GOAL_TEST(current_node.STATE) is True then return current_node.PATH
+    add current_node.STATE to explored set
+    successors = Expand successors of current_node.STATE
+    for successor in successors
+        if successor.STATE is not in explored set and is not in frontier
+            add successor to frontier with (state, path, cummulative cost)
+        elseif  successor.STATE is in frontier but has higher path cost
+            replace the existing node in frontier with the sucessor node
+
+
+  """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  print('Running Uniform Cost Search routine..')
+
+  from game import Directions
+  s = Directions.SOUTH
+  w = Directions.WEST
+  e = Directions.EAST
+  n = Directions.NORTH
+
+  # Create the frontier as an instance of priority queue class (ordered by path cost - lowest at top)
+  frontier = util.PriorityQueue()
+
+  # Create the explored area as a set
+  explored = set()
+
+  # Add inital node (start state, empty path) and initial path cost of 0  to queue - cost acts the priority for this queue
+  frontier.push ((problem.getStartState(), []),0)
+  #Some tests
+  # frontier.push (((1,1), ['West']), 661)
+  # item  = frontier.pop()
+  # print('Look who popped off first.....')
+  # print('First popping item=', item)
+  # print('First popping item state=', item[0])
+  # print('First popping item path=', item[1])
+
+
+  # Loop through the frontier
+  #  Select the node from the top of the queue (tFhis will be the one with lowest cost first)
+  #  Add the state to the explored set
+  #  expand the state of the node under consideration
+  #  loop round the children of the node under consideration
+  #     if the child is the goal state return the path to the child
+  #     if the child is not in the explored set or the frontier add the child to the frontier
+  while not frontier.isEmpty():
+      item = frontier.pop() #Lowest cost node is retrieved from frontier
+      #itemUnderConsideration, itemUnderConsiderationPathCost = frontier.pop()
+      itemUnderConsiderationState = item[0]
+      itemUnderConsiderationPath = item[1]
+      print('Node under consideration:', itemUnderConsiderationState, itemUnderConsiderationPath)
+
+      # If node under consideration contains goal state stop search and return path
+      if problem.isGoalState(itemUnderConsiderationState):
+          print('Yippeee we found the goal state', itemUnderConsiderationState, 'and the directions are:', itemUnderConsiderationPath)
+          return (itemUnderConsiderationPath)
+
+      # Add state of selected node to explored set
+      explored.add(itemUnderConsiderationState)
+
+      # Expand selected node's state to find sucessors
+      print('Finding successor state for ',itemUnderConsiderationState)
+      successorStates = problem.getSuccessors(itemUnderConsiderationState) #Returns (state,action,total path cost)
+      print('Successor states=', successorStates)
+
+      # loop round each successor state adding it as a node ((state,path),path_cost) to frontier
+      for successor in successorStates:
+          successorState = successor[0]
+          successorAction = successor[1]
+          successorPathCost = successor[2]
+          print('Processing Sucessor state=',successorState,'Action=',successorAction,'Action Cost=',successorPathCost)
+          print('itemunderconsiderationpath',itemUnderConsiderationPath)
+          print('successorAction',successorAction)
+
+          successorPath = itemUnderConsiderationPath[:] #Python 2 syntax to copy a list; don't use = as the new list is the old list(copies reference)
+          successorPath.append(successorAction)
+          print('succesor path',successorPath)
+          #Calculate path cost by passing path to get cost function - important to note that this function makes a call
+          #to an overridden heuristic (defauts to return 1 but will accept an override from comamnd line)
+          successorPathCost = problem.getCostOfActions(successorPath)
+          #Ignore sucessor state if already explored. If not already exlored add to frontier.
+          if  successorState not in explored:
+              print('Adding Sucessor node to frontier. State=', successorState, ', Path=', successorPath, ', Path Cost=', successorPathCost)
+              frontier.push((successorState, successorPath),successorPathCost)
+
+  #util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
   """
   A heuristic function estimates the cost from the current state to the nearest
-  goal in the provided SearchProblem.  This heuristic is trivial.
+  goal in the provided SearchProblem.  This heuristic is trivial and returns 0.
   """
   return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-  "Search the node that has the lowest combined cost and heuristic first."
+  """
+
+  A* Search uses a cost function which combines actual cost and esimated cost I.E. f(n) + h(n) where f(n) is the actual
+  cost incurred to reach node n and h(n) is a heuristic function giving the estimated costs to get from node n to the
+  goal state. h(s) must be an unerestimate for A* to work e.g. the straigt line distance from a town to another is
+  admissable as it underestimates the distance. A* search algorithm is identical to UCS except for the cost function
+  used.
+
+  Search the node that has the lowest combined cost and heuristic first.
+
+  Implement A* graph search in the empty function aStarSearch in search.py.
+  A* takes a heuristic function as an argument. Heuristics take two arguments: a state in the search problem (the main
+  argument), and the problem itself (for reference information). The nullHeuristic heuristic function in search.py is a
+  trivial example.   You can test your A* implementation on the original problem of finding a path through a maze to a
+  fixed position using the Manhattan distance heuristic (implemented already as manhattanHeuristic in searchAgents.py).
+
+ python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
+
+  This function accepts arguments
+  i)    problem - an object containign the definition of the problem and relevant methods
+  ii)   heuristic function - the function to be used to estimate the cost remaining to the goal state (defualts to
+         nullHeuristic)
+
+  This function returns a path of actions leading from the start state to the goal state as a python list.
+
+
+  """
   "*** YOUR CODE HERE ***"
+  print('Running A* search routine..')
+  print('Heuristic in use is',heuristic)
+
+  from game import Directions
+  s = Directions.SOUTH
+  w = Directions.WEST
+  e = Directions.EAST
+  n = Directions.NORTH
+
+  # Create the frontier as an instance of priority queue class (ordered by path cost - lowest at top)
+  frontier = util.PriorityQueue()
+
+  # Create the explored area as a set
+  explored = set()
+
+  # Add inital node (start state, empty path) and initial path cost of 0  to queue - cost acts the priority for this queue
+  actualPathCost = 0
+  estimatedRemainingPathCost = heuristic(problem.getStartState(), problem)
+  estimatedTotalPathCost = actualPathCost + estimatedRemainingPathCost
+
+  frontier.push((problem.getStartState(), []), estimatedTotalPathCost )
+  # Some tests
+  # frontier.push (((1,1), ['West']), 661)
+  # item  = frontier.pop()
+  # print('Look who popped off first.....')
+  # print('First popping item=', item)
+  # print('First popping item state=', item[0])
+  # print('First popping item path=', item[1])
+
+
+  # Loop through the frontier
+  #  Select the node from the top of the queue (tFhis will be the one with lowest cost first)
+  #  Add the state to the explored set
+  #  expand the state of the node under consideration
+  #  loop round the children of the node under consideration
+  #     if the child is the goal state return the path to the child
+  #     if the child is not in the explored set or the frontier add the child to the frontier
+  while not frontier.isEmpty():
+      item = frontier.pop()  # Lowest cost node is retrieved from frontier
+      # itemUnderConsideration, itemUnderConsiderationPathCost = frontier.pop()
+      itemUnderConsiderationState = item[0]
+      itemUnderConsiderationPath = item[1]
+      print('Node under consideration:', itemUnderConsiderationState, itemUnderConsiderationPath)
+
+      # If node under consideration contains goal state stop search and return path
+      if problem.isGoalState(itemUnderConsiderationState):
+          print('Yippeee we found the goal state', itemUnderConsiderationState, 'and the directions are:',
+                itemUnderConsiderationPath)
+          return (itemUnderConsiderationPath)
+
+      # Add state of selected node to explored set
+      explored.add(itemUnderConsiderationState)
+
+      # Expand selected node's state to find sucessors
+      print('Finding successor state for ', itemUnderConsiderationState)
+      successorStates = problem.getSuccessors(itemUnderConsiderationState)  # Returns (state,action,total path cost)
+      print('Successor states=', successorStates)
+
+      # loop round each successor state adding it as a node ((state,path),path_cost) to frontier
+      for successor in successorStates:
+          successorState = successor[0]
+          successorAction = successor[1]
+          successorPathCost = successor[2]
+          print(
+          'Processing Sucessor state=', successorState, 'Action=', successorAction, 'Action Cost=', successorPathCost)
+          print('itemunderconsiderationpath', itemUnderConsiderationPath)
+          print('successorAction', successorAction)
+
+          successorPath = itemUnderConsiderationPath[
+                          :]  # Python 2 syntax to copy a list; don't use = as the new list is the old list(copies reference)
+          successorPath.append(successorAction)
+          print('succesor path', successorPath)
+          # Calculate path cost by passing path to get cost function - important to note that this function makes a call
+          # to an overridden heuristic (defauts to return 1 but will accept an override from comamnd line)
+          successorPathCost = problem.getCostOfActions(successorPath)
+          # Ignore sucessor state if already explored. If not already exlored add to frontier.
+          if successorState not in explored:
+              # Add inital node (start state, empty path) and initial path cost of 0  to queue - cost acts the priority for this queue
+              estimatedRemainingPathCost = heuristic(successorState, problem)
+              estimatedTotalPathCost = successorPathCost + estimatedRemainingPathCost
+
+              print(
+              'Adding Sucessor node to frontier. State=', successorState, ', Path=', successorPath, ', Path Cost=',
+              estimatedTotalPathCost)
+              frontier.push((successorState, successorPath), estimatedTotalPathCost)
+
   util.raiseNotDefined()
     
   

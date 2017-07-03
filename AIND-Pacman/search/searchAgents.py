@@ -68,6 +68,9 @@ class SearchAgent(Agent):
     
   def __init__(self, fn='depthFirstSearch', prob='PositionSearchProblem', heuristic='nullHeuristic'):
     # Warning: some advanced Python magic is employed below to find the right functions and problems
+
+    #JM unless specified on command line the default problem is PosiitonSearchproblem and the default heuristic
+    #   is nullHeuristic
     
     # Get the search function from the name and heuristic
     if fn not in dir(search): 
@@ -85,6 +88,10 @@ class SearchAgent(Agent):
         raise AttributeError, heuristic + ' is not a function in searchAgents.py or search.py.'
       print('[SearchAgent] using function %s and heuristic %s' % (fn, heuristic)) 
       # Note: this bit of Python trickery combines the search algorithm and the heuristic
+
+      #JM - this is where we set the search algorithm and the heuristic function to use for player
+      #     SearchAgent. The validation above ensures that the heuristic has been defined somewhere
+      #     in the code and that the search function is defined in the file search.py
       self.searchFunction = lambda x: func(x, heuristic=heur)
       
     # Get the search problem type from the name
@@ -155,7 +162,7 @@ class PositionSearchProblem(search.SearchProblem):
     """
     self.walls = gameState.getWalls()
     self.startState = gameState.getPacmanPosition()
-    if start != None: self.startState = start
+    if start != None: self.startFState = start
     self.goal = goal
     self.costFn = costFn
     if warn and (gameState.getNumFood() != 1 or not gameState.hasFood(*goal)):
@@ -199,10 +206,11 @@ class PositionSearchProblem(search.SearchProblem):
       nextx, nexty = int(x + dx), int(y + dy)
       if not self.walls[nextx][nexty]:
         nextState = (nextx, nexty)
-        cost = self.costFn(nextState)
+        cost = self.costFn(nextState) #JM - this is the total path cost to the next state
         successors.append( ( nextState, action, cost) )
         
     # Bookkeeping for display purposes
+    #JM - I think this is how it shades the expanded nodes on the grid to show those visited
     self._expanded += 1 
     if state not in self._visited:
       self._visited[state] = True
@@ -210,10 +218,33 @@ class PositionSearchProblem(search.SearchProblem):
       
     return successors
 
+  def manhattanHeuristic(position, problem, info={}):
+    """The Manhattan distance heuristic for a PositionSearchProblem
+    Receives argumenents
+    i)   Position (x,y)
+    ii)  problem object
+
+    Returns estimated cost between position and goal state
+    """
+    xy1 = position
+    xy2 = problem.goal
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+  def euclideanHeuristic(position, problem, info={}):
+    "The Euclidean distance heuristic for a PositionSearchProblem"
+    xy1 = position
+    xy2 = problem.goal
+    return ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
+
   def getCostOfActions(self, actions):
     """
     Returns the cost of a particular sequence of actions.  If those actions
     include an illegal move, return 999999
+
+    JM - actions is the complete list of actions from the start position to a target position
+         The cost returned is then the total path cost to the new position - this means that I don't need
+         to compute the path cost in UCS myself!
+
     """
     if actions == None: return 999999
     x,y= self.getStartState()
@@ -222,8 +253,8 @@ class PositionSearchProblem(search.SearchProblem):
       # Check figure out the next state and see whether its' legal
       dx, dy = Actions.directionToVector(action)
       x, y = int(x + dx), int(y + dy)
-      if self.walls[x][y]: return 999999
-      cost += self.costFn((x,y))
+      if self.walls[x][y]: return 999999 #check if new position is a wall and if so return error code
+      cost += self.costFn((x,y))   #Apply the cost function specified by user or the default (every move costs 1)
     return cost
 
 class StayEastSearchAgent(SearchAgent):
@@ -234,9 +265,9 @@ class StayEastSearchAgent(SearchAgent):
   The cost function for stepping into a position (x,y) is 1/2^x.
   """
   def __init__(self):
-      self.searchFunction = search.uniformCostSearch
-      costFn = lambda pos: .5 ** pos[0] 
-      self.searchType = lambda state: PositionSearchProblem(state, costFn)
+      self.searchFunction = search.uniformCostSearch #Set searchFunction to use UCS algorithm
+      costFn = lambda pos: .5 ** pos[0] #The cost function for stepping into a position (x,y) is 1/2^x (1/2 to power x
+      self.searchType = lambda state: PositionSearchProblem(state, costFn) #Set searchType to a PositionSearchProblem with our cost function
       
 class StayWestSearchAgent(SearchAgent):
   """
@@ -251,7 +282,13 @@ class StayWestSearchAgent(SearchAgent):
       self.searchType = lambda state: PositionSearchProblem(state, costFn)
 
 def manhattanHeuristic(position, problem, info={}):
-  "The Manhattan distance heuristic for a PositionSearchProblem"
+  """The Manhattan distance heuristic for a PositionSearchProblem
+  Receives argumenents
+  i)   Position (x,y)
+  ii)  problem object
+
+  Returns estimated cost between position and goal state
+  """
   xy1 = position
   xy2 = problem.goal
   return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])

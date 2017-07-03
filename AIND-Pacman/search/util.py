@@ -72,10 +72,14 @@ class PriorityQueue:
 
   def pop(self):
       (priority,item) = heapq.heappop(self.heap)
-      return item
+      return item    #JM - I changed this to pass back priorty as it holds the path cost and I need this to compute the path cost of successors
+     # return item, priority #JM -  now believe that there is a cost function which computes the path cost usign the full path from
+     #the origin to the new posiiton so I don't need to hold the path cost in the frontier
+
   
   def isEmpty(self):
     return len(self.heap) == 0
+
 
 class PriorityQueueWithFunction(PriorityQueue):
   """
@@ -83,21 +87,21 @@ class PriorityQueueWithFunction(PriorityQueue):
   Queue and the Stack classes. This is designed for drop-in replacement for
   those two classes. The caller has to provide a priority function, which
   extracts each item's priority.
-  """  
-  def  __init__(self, priorityFunction):
+  """
+
+  def __init__(self, priorityFunction):
     "priorityFunction (item) -> priority"
-    self.priorityFunction = priorityFunction      # store the priority function
-    PriorityQueue.__init__(self)        # super-class initializer
-    
+    self.priorityFunction = priorityFunction  # store the priority function
+    PriorityQueue.__init__(self)  # super-class initializer
+
   def push(self, item):
     "Adds an item to the queue with priority from the priority function"
     PriorityQueue.push(self, item, self.priorityFunction(item))
 
-    
-def manhattanDistance( xy1, xy2 ):
-  "Returns the Manhattan distance between points xy1 and xy2"
-  return abs( xy1[0] - xy2[0] ) + abs( xy1[1] - xy2[1] )
 
+def manhattanDistance(xy1, xy2):
+  "Returns the Manhattan distance between points xy1 and xy2"
+  return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 """
   Data structures and functions useful for various course projects
   

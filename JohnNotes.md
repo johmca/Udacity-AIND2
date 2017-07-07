@@ -81,6 +81,43 @@ conda list
 
  
 
+Jupyter Notebooks
+=================
+
+Navigate to the project folder reuirign use of Jupyter notebook containing a
+.ipynb file
+
+ 
+
+So for the Simulated Annealing lab
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cd C:\Users\John\Desktop\AIND>cd aind-simulated_annealing-master
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+Then
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+jupyter notebook AIND-Simulated_Annealing.ipynb
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ 
+
+This launches a server app locally listening on port 8888. The browser should no
+open by itself and display a web page from localhost:8888.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
 Submit Project to Udacity
 =========================
 

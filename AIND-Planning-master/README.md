@@ -98,8 +98,8 @@ solved with graph searches such as breadth-first, depth-first, and A*, where the
 nodes of the graph are "states" and edges are "actions".  A "state" is the logical 
 conjunction of all boolean ground "fluents", or state variables, that are possible 
 for the problem using Propositional Logic. For example, we might have a problem to 
-plan the transport of one cargo, C1, on a
-single available plane, P1, from one airport to another, SFO to JFK.
+plan the transport of one cargo, C1, on a single available plane, P1, from one airport 
+to another, SFO to JFK.
 ![state space](images/statespace.png)
 In this simple example, there are five fluents, or state variables, which means our state 
 space could be as large as ![2to5](images/twotofive.png). Note the following:

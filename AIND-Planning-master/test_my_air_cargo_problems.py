@@ -50,7 +50,8 @@ class TestAirCargoProb3(unittest.TestCase):
 class TestAirCargoMethods(unittest.TestCase):
 
     def setUp(self):
-        self.p1 = air_cargo_p1()
+
+        self.p1 = air_cargo_p1() #Execute air caogo 1 initiation including building list of actions
         self.act1 = Action(
             expr('Load(C1, P1, SFO)'),
             [[expr('At(C1, SFO)'), expr('At(P1, SFO)')], []],
@@ -59,16 +60,14 @@ class TestAirCargoMethods(unittest.TestCase):
 
     def test_AC_get_actions(self):
         # to see a list of the actions, uncomment below
-        # print("\nactions for problem")
         # for action in self.p1.actions_list:
-        #     print("{}{}".format(action.name, action.args))
+        #     print("{}{}".format(actio,len(self.p1.actions_list)n.name, action.args))
         self.assertEqual(len(self.p1.actions_list), 20)
 
     def test_AC_actions(self):
         # to see list of possible actions, uncomment below
-        # print("\npossible actions:")
-        # for action in self.p1.actions(self.p1.initial):
-        #     print("{}{}".format(action.name, action.args))
+        for action in self.p1.actions(self.p1.initial):
+            print("{}{}".format(action.name, action.args))
         self.assertEqual(len(self.p1.actions(self.p1.initial)), 4)
 
     def test_AC_result(self):

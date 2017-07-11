@@ -21,6 +21,19 @@ python run_search.py -p 1 -s 1
 
 runs for problem 1 and search 1 (BFS)
 
+To run the local unit test script I needed to move the test script up to the main folder from the tests folder as it
+could not resolve aimacode folder (it seemed to have the correct logic to do so but didn't work, dont know why). Anyways
+after I moved it up I run as follows from main folder
+
+python test_my_air_cargo_problems.py
+
+Note - the bit of code that says
+if __name__ == '__main__':
+    unittest.main()
+    
+is present for cases such as this when code is executed directly rather thna via an import into another module that is
+executed. The code in this block runs only when the file is executed in this way.
+
 
 What Happens when I Execute Run_Search.py?
 ------------------------------------------
@@ -37,7 +50,7 @@ main () receives the index number of the problem and search from the command lin
         
         *** I NEED TO DEFINE air_cargo_p2 and air_cargo_p3 BASED ON air_cargo_p1 PROVIDED ***
         
-        These functions do their unique problem defintion set up by impementing the PDL defintion of the problem 
+        These functions do their unique problem defintion set up by impementing the PDDL defintion of the problem 
         in python lists and then they call the cosntructor function for the AirCargoProblem class passing in the lists 
         of cargos, planes, airports (Syntax used for this is... def air_cargo_p1() -> AirCargoProblem:) and then 
         they call the getActions() function
@@ -47,7 +60,7 @@ main () receives the index number of the problem and search from the command lin
 
         get_actions() returns a list of action objects - unload action objects + load action objects + fly action objects.
 
-        The loop then then executes method run_search passing problem and  search_function.
+        The loop then then executes method run_search() passing problem and  search_function.
         
         run_search executes the search function (selected by user and passed in as arg in the search_function variable 
         e.g. breadth_first_search at 0x00000268FBAB68C8. The search functions are defined in aimacode/search.py with 
@@ -58,7 +71,11 @@ main () receives the index number of the problem and search from the command lin
         function is a method of the node class and is called expand(). 
         
         expand() returns the child nodes reachable in 1 step from the frontier node under exploration and in doing so 
-        calls problem.actions() and problem.result() - I DON'T KNOW HOW RESULT() IS CALLED BUT IT MUST BE IN ORDER TO
+        calls problem.actions() and problem.result() 
+       
+        *** the aircargo paroblem has an actions() method amd a result() method and I NEED TO CMPLETE THESE !!!
+        
+        - I DON'T KNOW HOW RESULT() IS CALLED BUT IT MUST BE IN ORDER TO
         APPLY THE ACTION TO THE CURRENT STATE TO GENERATE A CHILD TO BE ADDED TO THE FRONTIER!!!!!
         
         return [self.child_node(problem, action)

@@ -26,14 +26,15 @@ class Problem:
         """The constructor specifies the initial state, and possibly a goal
         state, if there is a unique goal.  Your subclass's constructor can add
         other arguments."""
-        self.initial = initial
-        self.goal = goal
+        self.initial = initial #ARRRAY OF TF FLAGS CORRESPONDING TO LOGIC CHUNCKS
+        self.goal = goal #LOGIC CHUNKS INFICATING SUCCESS
 
     def actions(self, state):
         """Return the actions that can be executed in the given
         state. The result would typically be a list, but if there are
         many actions, consider yielding them one at a time in an
         iterator, rather than building them all at once."""
+        print('Now running problem.actions()...............')
         raise NotImplementedError
 
     def result(self, state, action):
@@ -95,19 +96,33 @@ class Node:
         return self.state < node.state
 
     def expand(self, problem):
-        "List the nodes reachable in one step from this node."
+        "Return list of the nodes reachable in one step from this node."
+        # THIS IS WHERE MY OWN ACTIONS() FUNCTION IS CALLED
+        #Returns a list of actions
+
+        # print('Now running expand()..now about to run problem.actions for state',self.state,'and print all actions generated below')
+        # for action in problem.actions(self.state): #For every available action from the current state
+        #     print('Actions returned from problem.actions()..',action)
+
+        #This is hard to read but it must be somethign like
+        #  Call problem.actions(self.state) which returns a list of action objects
+        #       Loop round list of actions and for each action
+        #            call self.child_node(problem, action)
+
         return [self.child_node(problem, action)
                 for action in problem.actions(self.state)]
 
     def child_node(self, problem, action):
-        "[Figure 3.10]"
-        next = problem.result(self.state, action)
-        return Node(next, self, action,
+        "[Returns a child node whcih results from applying the action to the state - Figure 3.10]"
+        #THIS IS WHERE MY OWN RESULT() FUNCTION IS CALLED
+        next = problem.result(self.state, action) #Apply action to state
+        return Node(next, self, action,           #Create and return the resultant node
                     problem.path_cost(self.path_cost, self.state,
                                       action, next))
 
     def solution(self):
         "Return the sequence of actions to go from the root to this node."
+        print('Printing nodes solution path..',self.path)
         return [node.action for node in self.path()[1:]]
 
     def path(self):
@@ -177,23 +192,32 @@ def depth_first_graph_search(problem):
     "Search the deepest nodes in the search tree first."
     return graph_search(problem, Stack())
 
-
+################################################################
+################################################################
 def breadth_first_search(problem):
     "[Figure 3.11]"
-    node = Node(problem.initial)
+    print('Running BFS for initial problem',problem.initial)
+    node = Node(problem.initial) #Run constructor funciton for Node class to create root node
+    print('BFS initial node is',node)
     if problem.goal_test(node.state):
+        print('Node is goal state',node.state)
         return node
     frontier = FIFOQueue()
     frontier.append(node)
     explored = set()
     while frontier:
-        node = frontier.pop()
-        explored.add(node.state)
-        for child in node.expand(problem):
+        node = frontier.pop() #Process next node from frontier
+        print('Node popped from frontier and added to explored region',node)
+        explored.add(node.state) #Add node to explored region
+        print('Generating children of selcted node using node.expand()...')
+        for child in node.expand(problem): #Generate children for selected node by finding and applying legal actions
+            print('Child generated', child)
             if child.state not in explored and child not in frontier:
-                if problem.goal_test(child.state):
+                if problem.goal_test(child.state): #If child is goal then return child and stop
+                    print('*********************Child generated is goal*********************', child)
                     return child
-                frontier.append(child)
+                frontier.append(child) #Add child node to frontier
+                print('Add child to frontier', child)
     return None
 
 

@@ -203,6 +203,10 @@ class AirCargoProblem(Problem):
     def actions(self, state: str) -> list:
         """ Return the actions that can be executed in the given state.
 
+        Any action which as a precondition that is present in the state may be legally executed
+
+        More formally put (p368) - An action a can be executed in state s if s entails the precondition of a.
+
         :param state: str
             state represented as T/F string of mapped fluents (state variables)
             e.g. 'FTTTFF'
@@ -210,12 +214,12 @@ class AirCargoProblem(Problem):
         """
         # TODO implement
 
-        print('Now running actions() function to get all actions that may be executed in state',state)
+        # print('Now running actions() function to get all actions that may be executed in state',state)
         possible_actions = []
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
-        print('Current state', state, kb.clauses)
-        print('Number of actions in actions_list=',len(self.actions_list))
+        # print('Current state', state, kb.clauses)
+        # print('Number of actions in actions_list=',len(self.actions_list))
         for action in self.actions_list:
             # print('Now checking action',action.name,action.args)
             is_possible = True
@@ -241,6 +245,17 @@ class AirCargoProblem(Problem):
         """ Return the state that results from executing the given
         action in the given state. The action must be one of
         self.actions(state).
+
+        This routine simply takes the current state, pos and neg, and copies to a new version depending
+        on the action's effects which can be add or rem.
+
+        So if the action has a add effect the new state will contain that effect in its pos section
+        If the action has a rem effect then the new state will contain that effect in its neg section
+
+        More formally put (p368) - The result of executing action a in state s is defined as a state s' which is represented
+        by the set of fluents formed by starting with s, removing the fluents that appear as negative literals in the
+        action's effects (what we wil call the delete list or DEL(a), and addign the fluents that are positie literals
+        in the action's effects (what we will call the add list or ADD(a).
 
         :param state: state entering node
         :param action: Action applied
@@ -296,14 +311,59 @@ class AirCargoProblem(Problem):
         return pg_levelsum
 
     @lru_cache(maxsize=8192)
+
     def h_ignore_preconditions(self, node: Node):
         """This heuristic estimates the minimum number of actions that must be
         carried out from the current state in order to satisfy all of the goal
         conditions by ignoring the preconditions required for an action to be
         executed.
+
+        From book p376...
+        Search is not efficient without a good heuristic function. Recall from Chapter 3 that a heuristic funciton h(s)
+        estimates the distance from state s to the goal and from that we can derive an ADMISSIBLE heuristic for this distance
+        - one that does NOT overestomate - then we can use A* search to find optimal solutions. An admissible heuristic can
+        be derived by defining a RELAXED PROBLEM that is easier to solve. The exact cost of a solution to this easier problem becomes
+        the heuristic value of the original problem.
+
+        There are 2 ways to relax a problem
+        i) Creating more lines between nodes (edges)
+        ii) Grouping nodes together resulting in a smaller state space
+
+        The technique used here is the former. We relax the problem by removing preconditions from our actions generating
+        more lines. Every on eof our actions is then applicable for every state. Any of our goal fluents (variables)
+        can be achieved in a single action. Of course our goal state will have multiple fluents describing it in which case
+         our heuristic simply counds how many actions are required to achieve these.
+
+        So if the node state is TTTTFFFFF we need and the goal state is At(C1,JFK)^At(C2,SFO) then we need to
+        check if the T/F flag corresponding to the goal state conditions are T or F. If they are F then we can set
+         them to T by applying one of our actions so count this in our count.The total number of actions counted is the
+         value of our heuristic.
+
+        Logic is...
+
+           - set action count to 0
+           - Loop through the goal state conditions and for each goal condition
+               look up the state map using the goal condition and get its position in the list
+               look up the node state using this posiiton
+               if node state at this position is FALSE then add 1 to action count
+
+        And thats all there is to it
+
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        # print('NOW RUNNING h_ignore_preconditions heuristic............',node)
+
         count = 0
+        for goal_condition in self.goal:
+            # print('goal condition is',goal_condition)
+            # print('state map is',self.state_map)
+            found = self.state_map.index(goal_condition)
+            # print('found goal condition at',found)
+            value=node.state[found]
+            # print('Node state',node.state,'has value',value,'at position',found)
+            if value == 'F': count +=1
+
+        # print('Number of actions =',count)
         return count
 
 

@@ -21,13 +21,27 @@ python run_search.py -p 1 -s 1
 
 runs for problem 1 and search 1 (BFS)
 
-To run the local unit test script I needed to move the test script up to the main folder from the tests folder as it
+Unit Test
+---------
+
+Note - To run the local unit test script I needed to move the test script up to the main folder from the tests folder as it
 could not resolve aimacode folder (it seemed to have the correct logic to do so but didn't work, dont know why). Anyways
 after I moved it up I run as follows from main folder
 
 python test_my_air_cargo_problems.py
 
-Note - the bit of code that says
+I should have fixed this by setting the python path
+
+1 Navigate to main project folder
+2 set PYTHONPATH=.
+
+The dot means "current working directory". So do this from within the directory where the aimacode subdirectory lives.
+
+Now from the main project folder execute the uni test script with
+
+python tests/test_my_air_cargo_problems.py
+
+Note about the bit of code that says
 if __name__ == '__main__':
     unittest.main()
     

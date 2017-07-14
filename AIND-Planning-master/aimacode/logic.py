@@ -75,7 +75,7 @@ class KB:
 class PropKB(KB):
     """A KB for propositional logic. Inefficient, with no indexing. """
 
-    def __init__(self, sentence=None):
+    def __init__(self, sentence: object = None) -> object:
         self.clauses = []
         if sentence:
             self.tell(sentence)

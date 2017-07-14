@@ -1,3 +1,9 @@
+#Note to ensure this script knows where to find imported modules such as aimacode navigate to the main
+#project folder and execute set PYTHONPATH=.
+#Thereafter you can run this scrpt from the command line in the main project folder with
+#    python /tests/test_my_air_cargo_problems.py
+
+
 import os
 import sys
 parent = os.path.dirname(os.path.realpath(__file__))

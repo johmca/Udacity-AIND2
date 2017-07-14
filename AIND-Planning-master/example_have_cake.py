@@ -37,7 +37,7 @@ class HaveCakeProblem(Problem):
                              [effect_add, effect_rem])
         return [eat_action, bake_action]
 
-    def actions(self, state: str) -> list:  # of Action
+    def actions(self, state: str) -> list:  # List all actions applicable in the given state
         possible_actions = []
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
@@ -53,7 +53,7 @@ class HaveCakeProblem(Problem):
                 possible_actions.append(action)
         return possible_actions
 
-    def result(self, state: str, action: Action):
+    def result(self, state: str, action: Action): #Compute the state resulting from applying an action to a state
         new_state = FluentState([], [])
         old_state = decode_state(state, self.state_map)
         for fluent in old_state.pos:
@@ -70,7 +70,7 @@ class HaveCakeProblem(Problem):
                 new_state.neg.append(fluent)
         return encode_state(new_state, self.state_map)
 
-    def goal_test(self, state: str) -> bool:
+    def goal_test(self, state: str) -> bool: #Test is given state is goal
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
         for clause in self.goal:
@@ -116,7 +116,7 @@ def have_cake():
 
 
 if __name__ == '__main__':
-    p = have_cake()
+    p = have_cake() #Run the constructor to create new instance of have cake problem
     print("**** Have Cake example problem setup ****")
     print("Initial state for this problem is {}".format(p.initial))
     print("Actions for this domain are:")
@@ -128,15 +128,20 @@ if __name__ == '__main__':
     print("Goal requirement for this problem are:")
     for g in p.goal:
         print('   {}'.format(g))
+
     print()
     print("*** Breadth First Search")
     run_search(p, breadth_first_search)
+
     print("*** Depth First Search")
     run_search(p, depth_first_graph_search)
+
     print("*** Uniform Cost Search")
     run_search(p, uniform_cost_search)
+
     print("*** Greedy Best First Graph Search - null heuristic")
     run_search(p, greedy_best_first_graph_search, parameter=p.h_1)
+
     print("*** A-star null heuristic")
     run_search(p, astar_search, p.h_1)
     # print("A-star ignore preconditions heuristic")

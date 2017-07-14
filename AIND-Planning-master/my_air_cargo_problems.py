@@ -262,7 +262,7 @@ class AirCargoProblem(Problem):
         :return: resulting state after action
         """
         # TODO implement
-        print('Running result() function...')
+        #print('Running result() function...')
         new_state = FluentState([], [])
         old_state = decode_state(state, self.state_map)
         for fluent in old_state.pos:

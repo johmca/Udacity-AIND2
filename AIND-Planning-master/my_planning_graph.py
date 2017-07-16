@@ -291,9 +291,10 @@ class PlanningGraph():
         # continue to build the graph alternating A, S levels until last two S levels contain the same literals,
         # i.e. until it is "leveled"
         while not leveled:
-            self.add_action_level(level) #JM - call add_action() here passing level to build action layer of plannin graph
-            # REINSTATE LATER
-            #self.update_a_mutex(self.a_levels[level])
+            #Build action layer of plannin ggraph
+            self.add_action_level(level)
+            # Build mutually exclusive relationships between actions
+            self.update_a_mutex(self.a_levels[level])
 
             level += 1 #Increment level count and move to build next level of planning graph
 
@@ -375,9 +376,9 @@ class PlanningGraph():
             print('Action node',action_node)
             for state_node in action_node.effnodes: #effnodes is a set of nodes which are the states resultign from actions
                 print('Effect node',state_node)
-                self.s_levels[level].add(state_node) #Add each effect node as state node
+                self.s_levels[level].add(state_node) #Add each action effect node as state node at this level
                 action_node.children.add(state_node) #Set the state node as a child of the action node
-                state_node.parents.add(action_node) #Ste the action node as the parent of the state node
+                state_node.parents.add(action_node) #Set the action node as the parent of the state node
 
 
 
@@ -386,13 +387,13 @@ class PlanningGraph():
 
         Mutex action tests section from 3rd Ed. 10.3 or 2nd Ed. 11.4
         A mutex relation holds between two actions a given level
-        if the planning graph is a serial planning graph and the pair are nonpersistence actions
+        if the planning graph is a serial planning graph and the pair are non-persistence actions
         or if any of the three conditions hold between the pair:
            Inconsistent Effects
            Interference
            Competing needs
 
-        :param nodeset: set of PgNode_a (siblings in the same level)
+        :param nodeset: set of PgNode_a nodes(action siblings in the same level)
         :return:
             mutex set in each PgNode_a in the set is appropriately updated
         """
@@ -438,6 +439,26 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Inconsistent Effects between nodes
+
+        #First make the effect sets for action nodes n1 and n2 into lists
+        nodea1_effect_list = list(node_a1.effnodes)
+        nodea2_effect_list = list(node_a2.effnodes)
+
+        #Read through the effects of action node n1 and for each check if it negates an effect listed in the action
+        #node n2
+        #NOTE - enumurate function returns a tuple (counter, value)
+        for i, nodea1_effect in enumerate(nodea1_effect_list):
+            #print('Processing effect',i,'from node1',node_a1.action ,'effects=', nodea1_effect.symbol,'IsPos=',nodea1_effect.is_pos)
+            #Now lookup the a2 effects list to see if we can find the same effect an dif we do then check if it has
+            #the same sign (pos or neg). If the signs are opposite then we have effects which are inconsistent. Return
+            #True
+            for j, nodea2_effect in enumerate(nodea2_effect_list):
+                # print('Processing effect', j, 'from node2', node_a2.action, 'effects=', nodea2_effect.symbol, 'IsPos=',
+                #       nodea2_effect.is_pos)
+                if nodea2_effect.symbol == nodea1_effect.symbol and nodea2_effect.is_pos!=nodea1_effect.is_pos:
+                    # print('These actions are mutually exclusive')
+                    return True
+
         return False
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
@@ -455,6 +476,58 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Interference between nodes
+
+        # Read through the effect states of action node n1 and for each check if it negates a precondition state of action
+        # node n2
+
+        # First make the effect sets for action nodes n1 and n2 into lists
+        nodea1_effect_list = list(node_a1.effnodes)
+        nodea2_precond_list = list(node_a2.prenodes)
+
+        print('Checking node1',node_a1.action,'against node2',node_a2.action,
+              'for inconsistency i.e. there exists a node1 effect state that negates a node 2 precondition state')
+
+        # NOTE - enumurate function returns a tuple (counter, value)
+        for i, nodea1_effect in enumerate(nodea1_effect_list):
+            print('Processing effect', i, 'from node1', node_a1.action, 'effects=', nodea1_effect.symbol, 'IsPos=',
+                  nodea1_effect.is_pos)
+            # Now lookup the a2 effects list to see if we can find the same effect an dif we do then check if it has
+            # the same sign (pos or neg). If the signs are opposite then we have effects which are inconsistent. Return
+            # True
+            for j, nodea2_precond in enumerate(nodea2_precond_list):
+                print('Processing precond', j, 'from node2', node_a2.action, 'precond=', nodea2_precond.symbol, 'IsPos=',
+                      nodea2_precond.is_pos)
+                if nodea2_precond.symbol == nodea1_effect.symbol and nodea2_precond.is_pos != nodea1_effect.is_pos:
+                    print('These actions are mutually exclusive due to inconsistency between effects and preconditions')
+                    return True
+
+        # Read through the effect states of action node n2 and for each check if it negates precondition state of action
+        # node n1
+
+        print('Checking node2', node_a2.action, 'against node1', node_a1.action,
+              'for inconsistency i.e. there exists a node2 effect state that negates a node 1 precondition state')
+
+        # First make the effect sets for action nodes n1 and n2 into lists
+        nodea1_precond_list = list(node_a1.prenodes)
+        nodea2_effect_list = list(node_a2.effnodes)
+
+        # NOTE - enumurate function returns a tuple (counter, value)
+        for i, nodea2_effect in enumerate(nodea2_effect_list):
+            print('Processing effect', i, 'from node2', node_a2.action, 'effects=', nodea2_effect.symbol, 'IsPos=',
+                  nodea2_effect.is_pos)
+            # Now lookup the a2 effects list to see if we can find the same effect an dif we do then check if it has
+            # the same sign (pos or neg). If the signs are opposite then we have effects which are inconsistent. Return
+            # True
+            for j, nodea1_precond in enumerate(nodea1_precond_list):
+                print('Processing precond', j, 'from node1', node_a1.action, 'precond=', nodea1_precond.symbol, 'IsPos=',
+                      nodea1_precond.is_pos)
+                if nodea1_precond.symbol == nodea2_effect.symbol and nodea1_precond.is_pos != nodea2_effect.is_pos:
+                    print('These actions are mutually exclusive due to inconsistency between effects and preconditions')
+                    return True
+
+
+
+
         return False
 
     def competing_needs_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:

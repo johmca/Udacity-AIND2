@@ -611,8 +611,10 @@ class PlanningGraph():
         there are no actions that could achieve the two literals at the same
         time, and False otherwise.
 
-        In other words, the two literal nodes are mutex if all of the actions that could achieve the first literal node
-        are pairwise mutually exclusive with all of the actions that could achieve the second literal node.
+        In other words, the two literal nodes are mutex if ALL of the actions that could achieve the first literal node
+        are pairwise mutually exclusive with ALL of the actions that could achieve the second literal node.
+
+        From the book.."each possible pair of actions that could achieve the two literal are mutually exclusive."
 
         HINT: The PgNode.is_mutex method can be used to test whether two nodes
         are mutually exclusive.
@@ -625,7 +627,7 @@ class PlanningGraph():
         node1_parents = list(node_s1.parents)
         node2_parents = list(node_s2.parents)
 
-        print('Running inconsistent support mutex...')
+        # print('Running inconsistent support mutex...')
 
         #Loop round node1's parent actions and test if these are mutex with node2's parent actions
         all_parentactions_mutex = True
@@ -634,6 +636,7 @@ class PlanningGraph():
                 if not(node1_parent.is_mutex(node2_parent)):  # This returns true if parent2 is found in the mutex list of parent1
                     all_parentactions_mutex = False
 
+        #If all state 1 parent actions are mutex with state2 parent action then we have inconsistent support mutex..return True
         if all_parentactions_mutex == True:
             return True
 
@@ -641,10 +644,30 @@ class PlanningGraph():
 
     def h_levelsum(self) -> int:
         """The sum of the level costs of the individual goals (admissible if goals independent)
+        e.g. For the Have Cake and Eat it problem our goal state Have Cake first appears at level 0 and our other
+             goal state Eaten Cake first appears at level 1 therefore this heuristic woudl return 1 (0 +1)
 
+        Note - I'm assuming that goal states can only be written in positive terms as the goals don't have any flags
+               indicating + or - by which I mean we can have Eaten(cake) but never ¬Eaten(cake) as a goal
         :return: int
         """
+        print('Running h_levelsum().....')
+
+        #Read round the problem's goal states
         level_sum = 0
-        # TODO implement
-        # for each goal in the problem, determine the level cost, then add them together
+        for gs, goal_state in enumerate(self.problem.goal):
+            print('Printing goal',gs,goal_state)
+            #Find the first level the goal state appears at - start by reading through the array of state levels
+            found = False
+            for lvl, state_set in enumerate(self.s_levels):
+                print('Looking in level',lvl)
+                state_list = list(state_set)
+                for state in state_list:
+                    if state.symbol == goal_state and state.is_pos == True: #Assume goals are always +ve
+                        print('Found goal state in level',lvl)
+                        level_sum = level_sum + lvl
+                        found = True
+                        break
+                if found == True: break
+
         return level_sum

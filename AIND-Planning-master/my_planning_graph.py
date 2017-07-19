@@ -645,7 +645,7 @@ class PlanningGraph():
     def h_levelsum(self) -> int:
         """The sum of the level costs of the individual goals (admissible if goals independent)
         e.g. For the Have Cake and Eat it problem our goal state Have Cake first appears at level 0 and our other
-             goal state Eaten Cake first appears at level 1 therefore this heuristic woudl return 1 (0 +1)
+             goal state Eaten Cake first appears at level 1 therefore this heuristic would return 1 (0 +1)
 
         Note - I'm assuming that goal states can only be written in positive terms as the goals don't have any flags
                indicating + or - by which I mean we can have Eaten(cake) but never ¬Eaten(cake) as a goal

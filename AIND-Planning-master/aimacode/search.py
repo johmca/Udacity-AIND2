@@ -196,28 +196,28 @@ def depth_first_graph_search(problem):
 ################################################################
 def breadth_first_search(problem):
     "[Figure 3.11]"
-    print('Running BFS for initial problem',problem.initial)
+    # print('Running BFS for initial problem',problem.initial)
     node = Node(problem.initial) #Run constructor funciton for Node class to create root node
     print('BFS initial node is',node)
     if problem.goal_test(node.state):
-        print('Node is goal state',node.state)
+        # print('Node is goal state',node.state)
         return node
     frontier = FIFOQueue()
     frontier.append(node)
     explored = set()
     while frontier:
         node = frontier.pop() #Process next node from frontier
-        print('Node popped from frontier and added to explored region',node)
+        # print('Node popped from frontier and added to explored region',node)
         explored.add(node.state) #Add node to explored region
-        print('Generating children of selcted node using node.expand()...')
+        # print('Generating children of selcted node using node.expand()...')
         for child in node.expand(problem): #Generate children for selected node by finding and applying legal actions
             print('Child generated', child)
             if child.state not in explored and child not in frontier:
                 if problem.goal_test(child.state): #If child is goal then return child and stop
-                    print('*********************Child generated is goal*********************', child)
+                    # print('*********************Child generated is goal*********************', child)
                     return child
                 frontier.append(child) #Add child node to frontier
-                print('Add child to frontier', child)
+                # print('Add child to frontier', child)
     return None
 
 
